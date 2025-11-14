@@ -18,9 +18,11 @@ RUN npm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-# Copia apenas o código compilado e dependências necessárias
+# Copia o node_modules da etapa de build (evita problemas com dependências)
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copia o package.json apenas para referência (não faz install)
 COPY package*.json ./
-RUN npm install --only=production
 
 # Copia o build da etapa anterior
 COPY --from=builder /app/dist ./dist
